@@ -1,24 +1,40 @@
-/**
- *
- * Event doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html#api-gateway-simple-proxy-for-lambda-input-format
- * @param {Object} event - API Gateway Lambda Proxy Input Format
- *
- * Context doc: https://docs.aws.amazon.com/lambda/latest/dg/nodejs-prog-model-context.html 
- * @param {Object} context
- *
- * Return doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html
- * @returns {Object} object - API Gateway Lambda Proxy Output Format
- * 
- */
+import { execFile } from "child_process";
+import path from "path";
 
 export const lambdaHandler = async (event, context) => {
-    const response = {
-      statusCode: 200,
-      body: JSON.stringify({
-        message: 'hello world',
-      })
-    };
+  try {
+    const exitCode = await new Promise((resolve, _) => {
+      execFile(
+        path.resolve("./node_modules/prisma/build/index.js"),
+        ["-v"],
+        {
+          env: {
+            ...process.env,
+          },
+        },
+        (error, stdout, stderr) => {
+          console.log(stdout);
+          if (error != null) {
+            console.log(`prisma migrate deploy exited with error ${error.message}`);
+            resolve(error.code ?? 1);
+          } else {
+            resolve(0);
+          }
+        },
+      );
+    });
 
-    return response;
+    if (exitCode != 0) throw Error(`migration failed with exit code ${exitCode}`);
+  } catch (e) {
+    console.log(e);
+    throw e;
   };
+
+  return {
+    statusCode: 200,
+    body: JSON.stringify({
+      message: `Finish! Status: ${exitCode}`,
+    })
+  };
+};
   
