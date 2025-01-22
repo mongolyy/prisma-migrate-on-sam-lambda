@@ -1,10 +1,7 @@
 services:
   postgres:
     image: postgres:17
-    container_name: "localpostgres"
     restart: always
-    networks:
-      - container-link
     ports:
       - "5432:5432"
     volumes:
@@ -13,7 +10,3 @@ services:
       POSTGRES_PASSWORD: postgrespassword
 volumes:
   db_data:
-
-networks:
-  container-link:
-    name: "docker-localhost"
