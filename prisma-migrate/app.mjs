@@ -6,7 +6,7 @@ export const lambdaHandler = async (event, context) => {
     const exitCode = await new Promise((resolve, _) => {
       execFile(
         path.resolve("./node_modules/prisma/build/index.js"),
-        ["-v"],
+        ["migrate", "deploy"],
         {
           env: {
             ...process.env,
