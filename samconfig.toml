@@ -1,0 +1,9 @@
+# More information about the configuration file can be found here:
+# https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-config.html
+version = 0.1
+
+[default.global.parameters]
+stack_name = "prisma-migrate-on-sam-lambda"
+
+[default.build.parameters]
+use_container = true
